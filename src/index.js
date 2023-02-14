@@ -7,7 +7,8 @@ let Body, Bodies, Composite, engine, mouseConstraint;
 const canvasWidth = 350;
 const canvasHeight = 500;
 // 物理演算canvas要素
-const matterCanvas = $('#canvas')[0];
+const matterCanvas = $('.canvas')[0];
+$(matterCanvas).css({ 'width': canvasWidth, 'height': canvasHeight });
 
 $(function () {
     // matter.jsの基本設定
@@ -28,15 +29,20 @@ $(function () {
     const rightWall = Bodies.rectangle(canvasWidth, canvasHeight / 2, 40, canvasHeight, { ...commonOptions, isStatic: true });
 
     Composite.add(engine.world, [ground, ceil, leftWall, rightWall]);
+
+    // デバイスの加速度センサーへのアクセス
+    $('.confirm-button').on('click', () => {
+        useDeviceMotion();
+    });
 });
 
-$(matterCanvas).on('click', () => {
+$(matterCanvas).on('click', e => {
     // オブジェクトのドラッグ中は新規でオブジェクトを追加させない
     if (mouseConstraint.body) { return };
     addObject();
 });
 
-const addObject = () => {
+function addObject() {
     const circle = Bodies.polygon(mousePointer.x, mousePointer.y, 8, 15, {
         render: {
             fillStyle: 'rgb(250, 200, 180)',
@@ -49,3 +55,30 @@ const addObject = () => {
 
     Composite.add(engine.world, circle);
 };
+
+function useDeviceMotion() {
+    if (DeviceMotionEvent && DeviceMotionEvent.requestPermission) {
+        // デバイスの加速度センサーへのアクセス許可を確認する必要がある
+        DeviceMotionEvent.requestPermission()
+            .then(state => {
+                // アクセスを許可する場合のみ実行可能
+                if (state === 'granted') {
+                    $('.confirm-button').hide();
+                    $('.info').show();
+                    // 方向の計測結果を取得
+                    window.addEventListener("deviceorientation", event => {
+                        $('#orientation-x').text(`X: ${precision(event.beta)}`);
+                        $('#orientation-y').text(`Y: ${precision(event.gamma)}`);
+                        $('#orientation-z').text(`Z: ${precision(event.alpha)}`);
+                    });
+                }
+            })
+            .catch(error => console.log(error));
+    } else {
+        alert('このブラウザではDeviceMotionを利用できません。');
+    }
+}
+
+function precision(num) {
+    return num.toFixed(1);
+}

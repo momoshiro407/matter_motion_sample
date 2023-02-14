@@ -1,4 +1,17 @@
-p {
-    font-size: 40px;
-    color: #efefef;
+.main {
+    text-align: center;
+}
+.canvas {
+    margin: 0 auto;
+}
+.confirm-button {
+    margin-top: 20px;
+    font-size: 20px;
+}
+.info {
+    display: none;
+    text-align: center;
+}
+#orientation-x, #orientation-y, #orientation-z {
+    font-family: sans-serif;
 }

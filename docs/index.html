@@ -8,7 +8,15 @@
 
 <body>
     <div>
-        <div id="canvas"></div>
+        <div class="main">
+            <div class="canvas"></div>
+            <button class="confirm-button">加速度センサーの使用を開始</button>
+        </div>
+        <div class="info">
+            <p id="orientation-x"></p>
+            <p id="orientation-y"></p>
+            <p id="orientation-z"></p>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="./main.js"></script>
