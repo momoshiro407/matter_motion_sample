@@ -14,7 +14,8 @@ const basicMatterConfig = (canvas, width, height) => {
         Bounds = Matter.Bounds,
         Constraint = Matter.Constraint,
         Events = Matter.Events,
-        Composite = Matter.Composite;
+        Composite = Matter.Composite,
+        Composites = Matter.Composites;
 
     // エンジンの生成
     const engine = Engine.create();
@@ -58,7 +59,7 @@ const basicMatterConfig = (canvas, width, height) => {
     // エンジンを実行
     Runner.run(engine);
 
-    return { Body, Bodies, Bounds, Constraint, Composite, engine, mouseConstraint };
+    return { Body, Bodies, Bounds, Constraint, Composite, Composites, engine, mouseConstraint };
 };
 
 export { basicMatterConfig, mousePointer };

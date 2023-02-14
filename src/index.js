@@ -2,7 +2,7 @@ import { basicMatterConfig, mousePointer } from './use_matter';
 import "./style.css";
 
 // matter.js関連のモジュール格納用
-let Body, Bodies, Composite, engine, mouseConstraint;
+let Body, Bodies, Composite, Composites, engine, mouseConstraint;
 // canvas領域のサイズ
 const canvasWidth = 350;
 const canvasHeight = 500;
@@ -12,7 +12,7 @@ $(matterCanvas).css({ 'width': canvasWidth, 'height': canvasHeight });
 
 $(function () {
     // matter.jsの基本設定
-    ({ Body, Bodies, Composite, engine, mouseConstraint } = basicMatterConfig(matterCanvas, canvasWidth, canvasHeight));
+    ({ Body, Bodies, Composite, Composites, engine, mouseConstraint } = basicMatterConfig(matterCanvas, canvasWidth, canvasHeight));
 
     // 初期の基本地形を追加
     // 共通オプション
@@ -28,33 +28,26 @@ $(function () {
     const leftWall = Bodies.rectangle(0, canvasHeight / 2, 40, canvasHeight, { ...commonOptions, isStatic: true });
     const rightWall = Bodies.rectangle(canvasWidth, canvasHeight / 2, 40, canvasHeight, { ...commonOptions, isStatic: true });
 
-    Composite.add(engine.world, [ground, ceil, leftWall, rightWall]);
+    // 動く多角形群を生成する
+    const polygons = Composites.stack(canvasWidth / 4, canvasHeight / 4, 6, 6, 3, 3, (x, y) => {
+        return Bodies.polygon(x, y, 8, 15, {
+            render: {
+                fillStyle: 'rgb(250, 200, 180)',
+                strokeStyle: 'rgb(250, 100, 0)',
+                lineWidth: '5'
+            },
+            friction: 0.01,
+            restitution: 0.8
+        });
+    });
+
+    Composite.add(engine.world, [ground, ceil, leftWall, rightWall, polygons]);
 
     // デバイスの加速度センサーへのアクセス
     $('.confirm-button').on('click', () => {
         useDeviceMotion();
     });
 });
-
-$(matterCanvas).on('click', e => {
-    // オブジェクトのドラッグ中は新規でオブジェクトを追加させない
-    if (mouseConstraint.body) { return };
-    addObject();
-});
-
-function addObject() {
-    const circle = Bodies.polygon(mousePointer.x, mousePointer.y, 8, 15, {
-        render: {
-            fillStyle: 'rgb(250, 200, 180)',
-            strokeStyle: 'rgb(250, 100, 0)',
-            lineWidth: '5'
-        },
-        friction: 0.01,
-        restitution: 0.8,
-    });
-
-    Composite.add(engine.world, circle);
-};
 
 function useDeviceMotion() {
     if (DeviceMotionEvent && DeviceMotionEvent.requestPermission) {
